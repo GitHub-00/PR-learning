@@ -28,17 +28,19 @@ def personal_rank(graph, root, alpha, iter_num, recom_num=10 ):
         tmp_rank = {point:0 for point in graph}
         for out_point, out_dict in graph.items():
             for inner_point, value in graph[out_point].items():
+                #print(alpha*rank[out_point]/len(out_dict))
                 tmp_rank[inner_point] += round(alpha*rank[out_point]/len(out_dict),4)
                 if inner_point == root:
                     tmp_rank[inner_point] += round(1-alpha,4)
         if tmp_rank==rank:
             break
 
-        rank == tmp_rank
+        rank = tmp_rank
 
     right_num = 0
-    for zuhe in sorted(rank.items(),key=operator.itemgetter(1)):
+    for zuhe in sorted(rank.items(),key=operator.itemgetter(1), reverse=True):
         point, pr_score = zuhe[0],zuhe[1]
+        #print('point: %s, pr_score: %3.5f'%(point,pr_score))
         if len(point.split('_'))<2:
             continue
         if point in graph[root]:
@@ -54,6 +56,7 @@ def get_one_user_recom():
     user = 'A'
     alpha = 0.6
     graph = read.get_graph_from_data('../data/log.txt')
+    #graph = read.get_graph_from_data('../data/ratings.csv')
     iter_num = 10
     print(personal_rank(graph,user,alpha,iter_num))
 
