@@ -33,6 +33,7 @@ def personal_rank(graph, root, alpha, iter_num, recom_num=10 ):
                 if inner_point == root:
                     tmp_rank[inner_point] += round(1-alpha,4)
         if tmp_rank==rank:
+            #print('out'+str(iter_index))
             break
 
         rank = tmp_rank
@@ -40,7 +41,6 @@ def personal_rank(graph, root, alpha, iter_num, recom_num=10 ):
     right_num = 0
     for zuhe in sorted(rank.items(),key=operator.itemgetter(1), reverse=True):
         point, pr_score = zuhe[0],zuhe[1]
-        #print('point: %s, pr_score: %3.5f'%(point,pr_score))
         if len(point.split('_'))<2:
             continue
         if point in graph[root]:
@@ -53,12 +53,28 @@ def personal_rank(graph, root, alpha, iter_num, recom_num=10 ):
 
 
 def get_one_user_recom():
+    '''
     user = 'A'
     alpha = 0.6
     graph = read.get_graph_from_data('../data/log.txt')
     #graph = read.get_graph_from_data('../data/ratings.csv')
     iter_num = 10
     print(personal_rank(graph,user,alpha,iter_num))
+    '''
+    user = '32'
+    alpha = 0.8
+    graph = read.get_graph_from_data('../data/ratings.csv')
+    iter_num = 100
+    recom_result = personal_rank(graph, user, alpha, iter_num)
+    item_info = read.get_item_info('../data/movies.csv')
+    for itemid in graph[user]:
+        item = itemid.split('_')[1]
+        print(item_info[item])
+    print('---------------------------------result-----------------------')
+    for itemid in recom_result:
+        item = itemid.split('_')[1]
+        print(item_info[item])
+        print(recom_result[itemid])
 
 if __name__=='__main__':
     get_one_user_recom()
