@@ -55,7 +55,7 @@ def get_matrix_all_point(matrix, vertex, alpha):
     row = []
     col = []
     data = []
-    print(total_len)
+    #print(total_len)
     for index in range(total_len):
         row.append(index)
         col.append(index)
@@ -78,4 +78,4 @@ if __name__ == '__main__':
     #print(m.todense())
     #print(vertex)
 
-    print(get_matrix_all_point(m, vertex, 0.8))
+    print(get_matrix_all_point(m, vertex, 0.8).todense())

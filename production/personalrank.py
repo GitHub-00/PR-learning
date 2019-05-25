@@ -32,12 +32,11 @@ def personal_rank(graph, root, alpha, iter_num, recom_num=10 ):
         tmp_rank = {point:0 for point in graph}
         for out_point, out_dict in graph.items():
             for inner_point, value in graph[out_point].items():
-                #print(alpha*rank[out_point]/len(out_dict))
+
                 tmp_rank[inner_point] += round(alpha*rank[out_point]/len(out_dict),4)
                 if inner_point == root:
                     tmp_rank[inner_point] += round(1-alpha,4)
         if tmp_rank==rank:
-            #print('out'+str(iter_index))
             break
 
         rank = tmp_rank
@@ -66,17 +65,21 @@ def personal_rank_matrix(graph, root, alpha, recom_num=10):
         a dic: key: itemid, value: pr score
     '''
     m, vertex, address_dict = mat_util.graph_to_matrix(graph)
+    #print(vertex)
+    #print(address_dict)
     if root not in address_dict:
         return {}
 
-    print(vertex)
     score_dict = {}
     recom_dict = {}
-    mat_all = mat_util.get_matrix_all_point(m, vertex, graph)
+    mat_all = mat_util.get_matrix_all_point(m, vertex, alpha)
     index = address_dict[root]
     initial_list = [[0] for row in range(len(vertex))]
-    initial_list[index] = 1
+    initial_list[index] = [1]
     r_zero = np.array(initial_list)
+
+    print(mat_all.shape)
+    print(r_zero.shape)
     res = gmres(mat_all, r_zero, tol=1e-8)[0]
 
     for index in range(len(res)):
@@ -88,7 +91,7 @@ def personal_rank_matrix(graph, root, alpha, recom_num=10):
 
         score_dict[point] = round(res[index],3)
 
-    for zuhe in sorted(score_dict.items(),key=operator.itemgetter(1), reversed=True)[:recom_num]:
+    for zuhe in sorted(score_dict.items(),key=operator.itemgetter(1), reverse=True)[:recom_num]:
         point, score = zuhe[0], zuhe[1]
         recom_dict[point] = score
 
@@ -106,10 +109,11 @@ def get_one_user_recom():
     '''
     user = '32'
     alpha = 0.8
-    graph = read.get_graph_from_data('../data/ratings.csv')
     iter_num = 100
+    graph = read.get_graph_from_data('../data/ratings.csv')
     recom_result = personal_rank(graph, user, alpha, iter_num)
-    item_info = read.get_item_info('../data/movies.csv')
+    #item_info = read.get_item_info('../data/movies.csv')
+    '''
     for itemid in graph[user]:
         item = itemid.split('_')[1]
         print(item_info[item])
@@ -118,6 +122,8 @@ def get_one_user_recom():
         item = itemid.split('_')[1]
         print(item_info[item])
         print(recom_result[itemid])
+    '''
+    return recom_result
 
 def get_one_user_by_matrix():
     '''
@@ -128,6 +134,7 @@ def get_one_user_by_matrix():
     iter_num = 100
     graph = read.get_graph_from_data('../data/ratings.csv')
     recom_result = personal_rank_matrix(graph,user,alpha,iter_num)
+    return recom_result
 
 if __name__=='__main__':
     #get_one_user_recom()
